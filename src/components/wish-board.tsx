@@ -142,10 +142,18 @@ function Instructions() {
         <h3 className="font-semibold">How to Wish</h3>
       </div>
       <ul className="mt-2 space-y-1 text-sm text-muted-foreground list-disc list-inside">
-        <li>Click **New Wish** to create a balloon.</li>
-        <li>**Drag** balloons to arrange them in the sky.</li>
-        <li>**Click** a balloon to see details.</li>
-        <li>**Release All** to clear every wish at once.</li>
+        <li>
+          Click <strong>New Wish</strong> to create a balloon.
+        </li>
+        <li>
+          <strong>Drag</strong> balloons to arrange them in the sky.
+        </li>
+        <li>
+          <strong>Double Click</strong> a balloon to see details.
+        </li>
+        <li>
+          <strong>Release All</strong> to clear every wish at once.
+        </li>
       </ul>
     </div>
   );
