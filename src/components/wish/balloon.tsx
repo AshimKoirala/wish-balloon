@@ -21,7 +21,7 @@ type BalloonProps = {
 const categoryColors: Record<Wish["category"], string> = {
   goal: "hsl(var(--primary))",
   dream: "hsl(var(--accent))",
-  feeling: "#F472B6", // A unique pink for feelings
+  feeling: "#F472B6",
 };
 
 export default function Balloon({
@@ -36,15 +36,13 @@ export default function Balloon({
   const [animationClass, setAnimationClass] = useState("");
   const [animationDuration, setAnimationDuration] = useState("");
   const [wasDragged, setWasDragged] = useState(false);
-  const nodeRef = useRef(null);
+  const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  // 🔊 preload sounds with refs
   const popSound = useRef<HTMLAudioElement | null>(null);
   const fulfilledSound = useRef<HTMLAudioElement | null>(null);
   const releaseSound = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // preload sounds once
     popSound.current = new Audio("/ballonpop.mp3");
     fulfilledSound.current = new Audio("/fullfilled.mp3");
     releaseSound.current = new Audio("/ballonrelease.mp3");
@@ -62,31 +60,12 @@ export default function Balloon({
 
   const handleRelease = (fulfilled: boolean) => {
     if (fulfilled) {
-      if (popSound.current) {
-        popSound.current.currentTime = 0;
-        popSound.current.play();
-      }
-
-      if (fulfilledSound.current) {
-        fulfilledSound.current.currentTime = 0;
-        fulfilledSound.current.play();
-
-        // stop after 5 sec
-        setTimeout(() => {
-          if (fulfilledSound.current) {
-            fulfilledSound.current.pause();
-            fulfilledSound.current.currentTime = 0;
-          }
-        }, 5000);
-      }
-
+      popSound.current?.play();
+      fulfilledSound.current?.play();
       setReleaseState("popping");
       onRelease(wish.id, true);
     } else {
-      if (releaseSound.current) {
-        releaseSound.current.currentTime = 0;
-        releaseSound.current.play();
-      }
+      releaseSound.current?.play();
       setReleaseState("flying");
       setTimeout(() => onRelease(wish.id, false), 200);
     }
@@ -103,28 +82,20 @@ export default function Balloon({
     }
   };
 
-  const handleDragStart = () => {
-    setWasDragged(false);
-  };
-
-  const handleDrag = () => {
-    setWasDragged(true);
-  };
-
+  const handleDragStart = () => setWasDragged(false);
+  const handleDrag = () => setWasDragged(true);
   const handleDragStop = (e: DraggableEvent, data: DraggableData) => {
     onPositionChange(wish.id, { x: data.x, y: data.y });
   };
 
-  const handleBalloonClick = () => {
+  const handleBalloonTap = () => {
     if (!wasDragged && releaseState === "idle") {
       setIsDialogOpen(true);
     }
     setWasDragged(false);
   };
 
-  if (!animationClass || !animationDuration) {
-    return null;
-  }
+  if (!animationClass || !animationDuration) return null;
 
   return (
     <>
@@ -141,7 +112,8 @@ export default function Balloon({
           className={cn("absolute", {
             "cursor-grab active:cursor-grabbing": releaseState === "idle",
           })}
-          onClick={handleBalloonClick}
+          onMouseUp={handleBalloonTap} // Desktop tap
+          onTouchEnd={handleBalloonTap} // Mobile tap
         >
           <Tooltip>
             <TooltipTrigger asChild>
@@ -169,6 +141,7 @@ export default function Balloon({
           </Tooltip>
         </div>
       </Draggable>
+
       <WishDetailsDialog
         wish={wish}
         color={categoryColors[wish.category]}
