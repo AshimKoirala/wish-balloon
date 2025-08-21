@@ -84,15 +84,14 @@ export default function Balloon({
 
   const handleDragStart = () => setWasDragged(false);
   const handleDrag = () => setWasDragged(true);
+
   const handleDragStop = (e: DraggableEvent, data: DraggableData) => {
     onPositionChange(wish.id, { x: data.x, y: data.y });
-  };
 
-  const handleBalloonTap = () => {
+    // Open dialog only if it was not dragged
     if (!wasDragged && releaseState === "idle") {
       setIsDialogOpen(true);
     }
-    setWasDragged(false);
   };
 
   if (!animationClass || !animationDuration) return null;
@@ -112,8 +111,6 @@ export default function Balloon({
           className={cn("absolute", {
             "cursor-grab active:cursor-grabbing": releaseState === "idle",
           })}
-          onMouseUp={handleBalloonTap} // Desktop tap
-          onTouchEnd={handleBalloonTap} // Mobile tap
         >
           <Tooltip>
             <TooltipTrigger asChild>
